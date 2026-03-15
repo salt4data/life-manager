@@ -1,6 +1,6 @@
 # 🌿 Personal Life Manager
 
-Welcome to my personal productivity app for managing **tasks**, **goals**, **work items / projects**, and **reminders**,  deployed on **Vercel** with a **Supabase** Postgres backend.
+A personal productivity app for managing **tasks**, **goals**, **work items / projects**, and **reminders** — deployed on **Vercel** with a **Supabase** Postgres backend.
 
 - ✅ Single-user, no authentication required
 - 🔒 All database access happens server-side (service role key never exposed to browser)

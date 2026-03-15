@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Life Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #F6FAF8;
+      --card: #FFFF;
+      --primary: #2E7D6B;
+      --primary-light: #3d9d87;
+      --secondary: #6C8EE6;
+      --accent: #F6B26B;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --shadow: 0 2px 8px rgba(46, 125, 107, 0.08), 0 4px 16px rgba(46, 125, 107, 0.06);
+      --shadow-lg: 0 4px 12px rgba(31, 41, 55, 0.1), 0 8px 24px rgba(31, 41, 55, 0.08);
+      --radius: 1rem;
+      --radius-sm: 0.5rem;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card);
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .nav-btn {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: var(--text);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-icon {
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    /* Inputs */
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .input:focus, .select:focus, .textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46, 125, 107, 0.1);
+    }
+
+    .textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-primary { background: rgba(46, 125, 107, 0.1); color: var(--primary); }
+    .badge-secondary { background: rgba(108, 142, 230, 0.1); color: var(--secondary); }
+    .badge-accent { background: rgba(246, 178, 107, 0.2); color: #b87a3a; }
+    .badge-success { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .badge-muted { background: var(--bg); color: var(--muted); }
+
+    /* Task Item */
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .task-item:hover {
+      background: rgba(46, 125, 107, 0.05);
+    }
+
+    .task-item.done {
+      opacity: 0.6;
+    }
+
+    .task-item.done .task-title {
+      text-decoration: line-through;
+    }
+
+    .task-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .task-checkbox:hover {
+      border-color: var(--primary);
+    }
+
+    .task-checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .task-checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 0.75rem;
+    }
+
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Grid layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+    /* Stats */
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Encouragement Card */
+    .encouragement-card {
+      background: linear-gradient(135deg, rgba(46, 125, 107, 0.08), rgba(108, 142, 230, 0.08));
+      border-radius: var(--radius);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .encouragement-card::before {
+      content: '"';
+      position: absolute;
+      top: -1rem;
+      left: 0.5rem;
+      font-size: 6rem;
+      color: var(--primary);
+      opacity: 0.1;
+      font-family: Georgia, serif;
+    }
+
+    .encouragement-verse {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .encouragement-ref {
+      font-size: 0.9rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .encouragement-message {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Pipeline Board */
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+      .pipeline {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .pipeline {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pipeline-column {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 1rem;
+      min-height: 300px;
+    }
+
+    .pipeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .pipeline-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .pipeline-count {
+      background: var(--card);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .job-card {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid var(--primary);
+    }
+
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .job-company {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .job-role {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Goal Card */
+    .goal-card {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .goal-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .goal-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .goal-progress {
+      height: 6px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.75rem;
+    }
+
+    .goal-progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.3s;
+    }
+
+    .goal-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 2rem;
+      height: 2rem;
+      border: none;
+      background: transparent;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: var(--bg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--card);
+      border-radius: var(--radius);
+    }
+
+    .filters .input, .filters .select {
+      width: auto;
+      min-width: 150px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Notification Banner */
+    .notification-banner {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--card);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--accent);
+      z-index: 1001;
+      max-width: 350px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .notification-banner.hide {
+      animation: slideOut 0.3s ease forwards;
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+
+    /* Checkbox for selection */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* Section headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* List */
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      font-size: 1.25rem; color: var(--primary); font-weight: 600;
+    }
+    .loading-overlay.hidden { display: none; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .main {
+        padding: 1rem;
+      }
+
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filters .input, .filters .select {
+        width: 100%;
+      }
+
+      .task-item {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .task-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+
+    /* Utility */
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--muted); }
+    .text-sm { font-size: 0.875rem; }
+    .font-bold { font-weight: 700; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 1rem; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading-overlay">🌿 Loading...</div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      🌿 Life Manager
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="openQuickAddTask()">+ Add Task</button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmReset()">Reset Data</button>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')">📊 Dashboard</button>
+    <button class="nav-btn" data-page="goals" onclick="showPage('goals')">🎯 Goals</button>
+    <button class="nav-btn" data-page="tasks" onclick="showPage('tasks')">✅ Tasks</button>
+    <button class="nav-btn" data-page="jobs" onclick="showPage('jobs')">💼 My Work</button>
+    <button class="nav-btn" data-page="reminders" onclick="showPage('reminders')">🔔 Reminders</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Dashboard Page -->
+    <div id="page-dashboard" class="page active">
+      <div class="grid-2 mb-3">
+        <div class="encouragement-card" id="encouragement-card"></div>
+        <div class="grid-4">
+          <div class="card stat-card">
+            <div class="stat-value" id="stat-today">0</div>
+            <div class="stat-label">Today's Tasks</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-value" id="stat-overdue">0</div>
+            <div class="stat-label">Overdue</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-value" id="stat-goals">0</div>
+            <div class="stat-label">Active Goals</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-value" id="stat-jobs">0</div>
+            <div class="stat-label">Active Work</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚠️ Overdue Tasks</h3>
+          </div>
+          <div id="overdue-tasks"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📅 Today's Tasks</h3>
+          </div>
+          <div id="today-tasks"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔮 Upcoming</h3>
+          </div>
+          <div id="upcoming-tasks"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goals Page -->
+    <div id="page-goals" class="page">
+      <div class="section-header">
+        <h1 class="section-title">Goals</h1>
+        <button class="btn btn-primary" onclick="openGoalModal()">+ Add Goal</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="big" onclick="switchGoalTab('big')">🏔️ Big Goals</button>
+        <button class="tab" data-tab="short" onclick="switchGoalTab('short')">🎯 Short-Term Goals</button>
+      </div>
+
+      <div id="goals-list" class="grid-2"></div>
+    </div>
+
+    <!-- Tasks Page -->
+    <div id="page-tasks" class="page">
+      <div class="section-header">
+        <h1 class="section-title">Tasks</h1>
+        <button class="btn btn-primary" onclick="openTaskModal()">+ Add Task</button>
+      </div>
+
+      <div class="filters">
+        <input type="text" class="input" id="task-search" placeholder="Search tasks..." oninput="filterTasks()">
+        <select class="select" id="filter-status" onchange="filterTasks()">
+          <option value="">All Status</option>
+          <option value="todo">To Do</option>
+          <option value="doing">Doing</option>
+          <option value="done">Done</option>
+        </select>
+        <select class="select" id="filter-priority" onchange="filterTasks()">
+          <option value="">All Priorities</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select class="select" id="filter-goal" onchange="filterTasks()">
+          <option value="">All Goals</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear Filters</button>
+      </div>
+
+      <div class="card mb-2" id="bulk-actions" style="display: none;">
+        <div class="flex items-center justify-between flex-wrap gap-1">
+          <span id="selected-count">0 selected</span>
+          <div class="flex gap-1">
+            <button class="btn btn-success btn-sm" onclick="bulkMarkDone()">Mark Done</button>
+            <button class="btn btn-accent btn-sm" onclick="bulkPushDate()">Push Date</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearSelection()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tasks-list"></div>
+    </div>
+
+    <!-- Jobs Page -->
+    <div id="page-jobs" class="page">
+      <div class="section-header">
+        <h1 class="section-title">My Work</h1>
+        <button class="btn btn-primary" onclick="openJobModal()">+ Add Work Item</button>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-column" data-status="interested">
+          <div class="pipeline-header">
+            <span class="pipeline-title">📋 Planned</span>
+            <span class="pipeline-count" id="count-interested">0</span>
+          </div>
+          <div class="pipeline-jobs" id="jobs-interested"></div>
+        </div>
+        <div class="pipeline-column" data-status="applied">
+          <div class="pipeline-header">
+            <span class="pipeline-title">▶️ Active</span>
+            <span class="pipeline-count" id="count-applied">0</span>
+          </div>
+          <div class="pipeline-jobs" id="jobs-applied"></div>
+        </div>
+        <div class="pipeline-column" data-status="interview">
+          <div class="pipeline-header">
+            <span class="pipeline-title">🔍 In Review</span>
+            <span class="pipeline-count" id="count-interview">0</span>
+          </div>
+          <div class="pipeline-jobs" id="jobs-interview"></div>
+        </div>
+        <div class="pipeline-column" data-status="offer">
+          <div class="pipeline-header">
+            <span class="pipeline-title">✅ Completed</span>
+            <span class="pipeline-count" id="count-offer">0</span>
+          </div>
+          <div class="pipeline-jobs" id="jobs-offer"></div>
+        </div>
+        <div class="pipeline-column" data-status="rejected">
+          <div class="pipeline-header">
+            <span class="pipeline-title">⏸️ On Hold</span>
+            <span class="pipeline-count" id="count-rejected">0</span>
+          </div>
+          <div class="pipeline-jobs" id="jobs-rejected"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reminders Page -->
+    <div id="page-reminders" class="page">
+      <div class="section-header">
+        <h1 class="section-title">Reminders</h1>
+        <button class="btn btn-secondary" onclick="requestNotificationPermission()">🔔 Enable Notifications</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⏰ Next 24 Hours</h3>
+          </div>
+          <div id="reminders-upcoming"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📋 All Reminders</h3>
+          </div>
+          <div id="reminders-all"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Modal</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- Notification Sound -->
+  <audio id="notification-sound" preload="auto">
+    <source src="data:audio/mp3;base64,SUQzBAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAA//tQAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7////8AAAATGF2YzU4LjEzAAAAJAAAAYYoRwmHAAAAD/+9DEAAAGAAGn9AAAIiwhLP80YAAAAH/8AAAAPqqqq" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // ================================================================
+    //  API helpers — all data flows through /api/* serverless functions
+    // ================================================================
+    const API = {
+      async get(url) {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      },
+      async post(url, body) {
+        const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      },
+      async put(url, body) {
+        const r = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      },
+      async del(url, body) {
+        const r = await fetch(url, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!r.ok) throw new Error(await r.text());
+        return r.json();
+      }
+    };
+
+    // ================================================================
+    //  Bible Verses (static, stays client-side)
+    // ================================================================
+    const verses = [
+      { reference: 'Isaiah 41:10', text: 'Fear not, for I am with you; be not dismayed, for I am your God.', message: 'God walks beside you in every challenge.', tags: ['strength', 'perseverance'] },
+      { reference: 'Philippians 4:6-7', text: 'Do not be anxious about anything, but in prayer present your requests to God.', message: 'Peace comes through trusting Him with your worries.', tags: ['peace', 'wisdom'] },
+      { reference: 'Galatians 6:9', text: 'Let us not become weary in doing good, for at the proper time we will reap a harvest.', message: 'Keep going—your persistence will bear fruit.', tags: ['perseverance', 'strength'] },
+      { reference: 'Colossians 3:23', text: 'Whatever you do, work at it with all your heart, as working for the Lord.', message: 'Your daily work has eternal purpose.', tags: ['wisdom', 'strength'] },
+      { reference: 'Psalm 23:1-3', text: 'The Lord is my shepherd; I shall not want. He leads me beside still waters.', message: 'Rest in His provision and guidance.', tags: ['peace', 'gratitude'] },
+      { reference: 'Proverbs 3:5-6', text: 'Trust in the Lord with all your heart and lean not on your own understanding.', message: 'When the path is unclear, trust His direction.', tags: ['wisdom', 'peace'] },
+      { reference: 'Jeremiah 29:11', text: 'For I know the plans I have for you, plans to prosper you and give you hope.', message: 'Your future is held in loving hands.', tags: ['hope', 'peace'] },
+      { reference: 'Matthew 11:28', text: 'Come to me, all who are weary and burdened, and I will give you rest.', message: 'Lay down your burdens—rest is waiting.', tags: ['peace', 'gratitude'] },
+      { reference: 'Romans 8:28', text: 'All things work together for good for those who love God.', message: 'Even challenges are woven into something beautiful.', tags: ['perseverance', 'hope'] },
+      { reference: 'Joshua 1:9', text: 'Be strong and courageous. Do not be afraid; do not be discouraged.', message: 'Courage is yours—claim it today.', tags: ['strength', 'perseverance'] },
+      { reference: 'Psalm 46:10', text: 'Be still and know that I am God.', message: 'In stillness, you find His strength.', tags: ['peace', 'wisdom'] },
+      { reference: 'Isaiah 40:31', text: 'Those who hope in the Lord will renew their strength; they will soar on wings like eagles.', message: 'Your strength is renewed as you wait on Him.', tags: ['strength', 'perseverance'] },
+      { reference: 'Psalm 118:24', text: 'This is the day the Lord has made; let us rejoice and be glad in it.', message: 'Today is a gift—embrace it with joy!', tags: ['gratitude', 'peace'] },
+      { reference: 'Philippians 4:13', text: 'I can do all things through Christ who strengthens me.', message: 'His strength flows through you.', tags: ['strength', 'perseverance'] },
+      { reference: 'Psalm 37:4', text: 'Delight yourself in the Lord, and he will give you the desires of your heart.', message: 'Your deepest longings are known and treasured.', tags: ['gratitude', 'hope'] },
+      { reference: '1 Thessalonians 5:18', text: "Give thanks in all circumstances; for this is God's will for you.", message: 'Gratitude transforms every situation.', tags: ['gratitude', 'wisdom'] },
+      { reference: 'Psalm 34:18', text: 'The Lord is close to the brokenhearted and saves those who are crushed in spirit.', message: 'He draws near when you feel far away.', tags: ['peace', 'perseverance'] },
+      { reference: 'Lamentations 3:22-23', text: 'His mercies are new every morning; great is your faithfulness.', message: 'Each dawn brings fresh grace.', tags: ['gratitude', 'hope'] },
+      { reference: '2 Timothy 1:7', text: 'God gave us a spirit not of fear but of power and love and self-control.', message: 'You carry power within you.', tags: ['strength', 'wisdom'] },
+      { reference: 'Hebrews 12:1', text: 'Let us run with perseverance the race marked out for us.', message: 'Keep running—the finish line is worth it.', tags: ['perseverance', 'strength'] },
+    ];
+
+    // ================================================================
+    //  State — populated from the server on init
+    // ================================================================
+    let data = { tasks: [], goals: [], jobs: [] };
+    let selectedTasks = new Set();
+    let currentGoalTab = 'big';
+    let reminderInterval = null;
+
+    // ================================================================
+    //  Server sync helpers
+    // ================================================================
+    async function loadAllData() {
+      try {
+        data = await API.get('/api/data');
+        // Normalise field names from DB snake_case → frontend camelCase
+        data.tasks = (data.tasks || []).map(normaliseTask);
+        data.goals = (data.goals || []).map(normaliseGoal);
+        data.jobs  = (data.jobs  || []).map(normaliseJob);
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        data = { tasks: [], goals: [], jobs: [] };
+      }
+    }
+
+    function normaliseTask(t) {
+      return {
+        id: t.id,
+        title: t.title,
+        status: t.status,
+        dueDate: t.due_date || null,
+        reminderDateTime: t.reminder_date_time || null,
+        priority: t.priority,
+        goalId: t.goal_id || null,
+        jobId: t.job_id || null,
+        notes: t.notes || '',
+        createdAt: t.created_at
+      };
+    }
+    function normaliseGoal(g) {
+      return {
+        id: g.id,
+        title: g.title,
+        type: g.type,
+        parentGoalId: g.parent_goal_id || null,
+        status: g.status,
+        dueDate: g.due_date || null,
+        notes: g.notes || '',
+        createdAt: g.created_at
+      };
+    }
+    function normaliseJob(j) {
+      return {
+        id: j.id,
+        company: j.company,
+        role: j.role,
+        status: j.status,
+        nextActionDate: j.next_action_date || null,
+        link: j.link || null,
+        notes: j.notes || '',
+        createdAt: j.created_at
+      };
+    }
+
+    // Convert camelCase back to snake_case for API calls
+    function taskToApi(t) {
+      return {
+        id: t.id || undefined,
+        title: t.title,
+        status: t.status,
+        due_date: t.dueDate || null,
+        reminder_date_time: t.reminderDateTime || null,
+        priority: t.priority,
+        goal_id: t.goalId || null,
+        job_id: t.jobId || null,
+        notes: t.notes || null
+      };
+    }
+    function goalToApi(g) {
+      return {
+        id: g.id || undefined,
+        title: g.title,
+        type: g.type,
+        parent_goal_id: g.parentGoalId || null,
+        status: g.status,
+        due_date: g.dueDate || null,
+        notes: g.notes || null
+      };
+    }
+    function jobToApi(j) {
+      return {
+        id: j.id || undefined,
+        company: j.company,
+        role: j.role,
+        status: j.status,
+        next_action_date: j.nextActionDate || null,
+        link: j.link || null,
+        notes: j.notes || null
+      };
+    }
+
+    // ================================================================
+    //  Navigation
+    // ================================================================
+    function showPage(pageName) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`page-${pageName}`).classList.add('active');
+      document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+      if (pageName === 'dashboard') renderDashboard();
+      if (pageName === 'goals') renderGoals();
+      if (pageName === 'tasks') renderTasks();
+      if (pageName === 'jobs') renderJobs();
+      if (pageName === 'reminders') renderReminders();
+    }
+
+    // ================================================================
+    //  Dashboard
+    // ================================================================
+    function renderDashboard() {
+      const today = new Date().toISOString().split('T')[0];
+      const todayTasks = data.tasks.filter(t => t.dueDate === today && t.status !== 'done');
+      const overdueTasks = data.tasks.filter(t => t.dueDate < today && t.status !== 'done');
+      const upcomingTasks = data.tasks.filter(t => t.dueDate > today && t.status !== 'done').slice(0, 5);
+      const activeGoals = data.goals.filter(g => g.status !== 'completed');
+      const activeJobs = data.jobs.filter(j => j.status !== 'rejected' && j.status !== 'offer');
+      const completedToday = data.tasks.filter(t => t.status === 'done' && t.dueDate === today);
+
+      document.getElementById('stat-today').textContent = todayTasks.length;
+      document.getElementById('stat-overdue').textContent = overdueTasks.length;
+      document.getElementById('stat-goals').textContent = activeGoals.length;
+      document.getElementById('stat-jobs').textContent = activeJobs.length;
+
+      let tag = 'wisdom';
+      if (overdueTasks.length > 0) tag = 'perseverance';
+      else if (completedToday.length > 0) tag = 'gratitude';
+      const matchingVerses = verses.filter(v => v.tags.includes(tag));
+      const verse = matchingVerses[Math.floor(Math.random() * matchingVerses.length)];
+      document.getElementById('encouragement-card').innerHTML = `
+        <div class="encouragement-verse">"${verse.text}"</div>
+        <div class="encouragement-ref">— ${verse.reference}</div>
+        <div class="encouragement-message">${verse.message}</div>
+      `;
+
+      document.getElementById('overdue-tasks').innerHTML = overdueTasks.length > 0
+        ? overdueTasks.map(t => renderDashboardTask(t, true)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">🎉</div><div>No overdue tasks!</div></div>';
+      document.getElementById('today-tasks').innerHTML = todayTasks.length > 0
+        ? todayTasks.map(t => renderDashboardTask(t)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">✨</div><div>All clear for today!</div></div>';
+      document.getElementById('upcoming-tasks').innerHTML = upcomingTasks.length > 0
+        ? upcomingTasks.map(t => renderDashboardTask(t)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">📅</div><div>No upcoming tasks</div></div>';
+    }
+
+    function renderDashboardTask(task, isOverdue = false) {
+      const priorityClass = task.priority === 'high' ? 'badge-danger' : task.priority === 'medium' ? 'badge-accent' : 'badge-muted';
+      return `
+        <div class="task-item ${task.status === 'done' ? 'done' : ''}">
+          <div class="task-checkbox ${task.status === 'done' ? 'checked' : ''}" onclick="toggleTaskDone('${task.id}')"></div>
+          <div class="task-content">
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div class="task-meta">
+              <span class="badge ${priorityClass}">${task.priority}</span>
+              ${isOverdue ? `<span class="badge badge-danger">Overdue: ${task.dueDate}</span>` : `<span>${task.dueDate}</span>`}
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openEditTaskModal('${task.id}')">Edit</button>
+            <button class="btn btn-accent btn-sm" onclick="pushTaskDate('${task.id}')">Push</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================================================================
+    //  Tasks
+    // ================================================================
+    function renderTasks() {
+      const filtered = getFilteredTasks();
+      populateGoalFilter();
+      const html = filtered.length > 0
+        ? filtered.map(t => renderTaskItem(t)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-title">No tasks found</div><div>Add a task to get started</div></div>';
+      document.getElementById('tasks-list').innerHTML = html;
+      updateBulkActions();
+    }
+
+    function getFilteredTasks() {
+      let filtered = [...data.tasks];
+      const search = document.getElementById('task-search').value.toLowerCase();
+      const status = document.getElementById('filter-status').value;
+      const priority = document.getElementById('filter-priority').value;
+      const goalId = document.getElementById('filter-goal').value;
+      if (search) filtered = filtered.filter(t => t.title.toLowerCase().includes(search) || (t.notes && t.notes.toLowerCase().includes(search)));
+      if (status) filtered = filtered.filter(t => t.status === status);
+      if (priority) filtered = filtered.filter(t => t.priority === priority);
+      if (goalId) filtered = filtered.filter(t => t.goalId === goalId);
+      return filtered.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    }
+
+    function populateGoalFilter() {
+      const select = document.getElementById('filter-goal');
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">All Goals</option>' +
+        data.goals.map(g => `<option value="${g.id}">${escapeHtml(g.title)}</option>`).join('');
+      select.value = currentValue;
+    }
+
+    function renderTaskItem(task) {
+      const priorityClass = task.priority === 'high' ? 'badge-danger' : task.priority === 'medium' ? 'badge-accent' : 'badge-muted';
+      const statusClass = task.status === 'done' ? 'badge-success' : task.status === 'doing' ? 'badge-secondary' : 'badge-muted';
+      const goal = data.goals.find(g => g.id === task.goalId);
+      const job = data.jobs.find(j => j.id === task.jobId);
+      const today = new Date().toISOString().split('T')[0];
+      const isOverdue = task.dueDate < today && task.status !== 'done';
+      return `
+        <div class="task-item ${task.status === 'done' ? 'done' : ''}">
+          <input type="checkbox" class="checkbox" ${selectedTasks.has(task.id) ? 'checked' : ''} onchange="toggleTaskSelection('${task.id}')">
+          <div class="task-checkbox ${task.status === 'done' ? 'checked' : ''}" onclick="toggleTaskDone('${task.id}')"></div>
+          <div class="task-content">
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div class="task-meta">
+              <span class="badge ${priorityClass}">${task.priority}</span>
+              <span class="badge ${statusClass}">${task.status}</span>
+              ${isOverdue ? `<span class="badge badge-danger">Overdue</span>` : ''}
+              <span>📅 ${task.dueDate}</span>
+              ${task.reminderDateTime ? `<span>🔔 ${new Date(task.reminderDateTime).toLocaleString()}</span>` : ''}
+              ${goal ? `<span>🎯 ${escapeHtml(goal.title)}</span>` : ''}
+              ${job ? `<span>💼 ${escapeHtml(job.company)}</span>` : ''}
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openEditTaskModal('${task.id}')">Edit</button>
+            <button class="btn btn-accent btn-sm" onclick="pushTaskDate('${task.id}')">Push</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDeleteTask('${task.id}')">Delete</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterTasks() { renderTasks(); }
+
+    function clearFilters() {
+      document.getElementById('task-search').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-priority').value = '';
+      document.getElementById('filter-goal').value = '';
+      renderTasks();
+    }
+
+    function toggleTaskSelection(id) {
+      if (selectedTasks.has(id)) selectedTasks.delete(id); else selectedTasks.add(id);
+      updateBulkActions();
+    }
+
+    function updateBulkActions() {
+      const bulkDiv = document.getElementById('bulk-actions');
+      if (selectedTasks.size > 0) {
+        bulkDiv.style.display = 'block';
+        document.getElementById('selected-count').textContent = `${selectedTasks.size} selected`;
+      } else {
+        bulkDiv.style.display = 'none';
+      }
+    }
+
+    function clearSelection() { selectedTasks.clear(); renderTasks(); }
+
+    async function bulkMarkDone() {
+      const promises = [];
+      selectedTasks.forEach(id => {
+        const task = data.tasks.find(t => t.id === id);
+        if (task) {
+          task.status = 'done';
+          promises.push(API.put('/api/tasks', taskToApi(task)));
+        }
+      });
+      await Promise.all(promises);
+      selectedTasks.clear();
+      renderTasks();
+    }
+
+    function bulkPushDate() {
+      openModal('Push Selected Tasks', `
+        <div class="form-group">
+          <label class="form-label">New Due Date</label>
+          <input type="date" class="input" id="bulk-push-date" value="${getTomorrow()}">
+        </div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmBulkPush()">Push</button>
+      `);
+    }
+
+    async function confirmBulkPush() {
+      const newDate = document.getElementById('bulk-push-date').value;
+      const promises = [];
+      selectedTasks.forEach(id => {
+        const task = data.tasks.find(t => t.id === id);
+        if (task) {
+          task.dueDate = newDate;
+          promises.push(API.put('/api/tasks', taskToApi(task)));
+        }
+      });
+      await Promise.all(promises);
+      selectedTasks.clear();
+      closeModal();
+      renderTasks();
+    }
+
+    async function toggleTaskDone(id) {
+      const task = data.tasks.find(t => t.id === id);
+      if (task) {
+        task.status = task.status === 'done' ? 'todo' : 'done';
+        await API.put('/api/tasks', taskToApi(task));
+        renderCurrentPage();
+      }
+    }
+
+    function pushTaskDate(id) {
+      openModal('Push Task', `
+        <div class="form-group">
+          <label class="form-label">New Due Date</label>
+          <input type="date" class="input" id="push-date" value="${getTomorrow()}">
+        </div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmPushTask('${id}')">Push</button>
+      `);
+    }
+
+    async function confirmPushTask(id) {
+      const newDate = document.getElementById('push-date').value;
+      const task = data.tasks.find(t => t.id === id);
+      if (task) {
+        task.dueDate = newDate;
+        await API.put('/api/tasks', taskToApi(task));
+        closeModal();
+        renderCurrentPage();
+      }
+    }
+
+    async function confirmDeleteTask(id) {
+      if (confirm('Are you sure you want to delete this task?')) {
+        await API.del('/api/tasks', { id });
+        data.tasks = data.tasks.filter(t => t.id !== id);
+        renderCurrentPage();
+      }
+    }
+
+    // ================================================================
+    //  Goals
+    // ================================================================
+    function renderGoals() {
+      const goals = data.goals.filter(g => g.type === currentGoalTab);
+      const html = goals.length > 0
+        ? goals.map(g => renderGoalCard(g)).join('')
+        : `<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">No ${currentGoalTab === 'big' ? 'big' : 'short-term'} goals yet</div><div>Add a goal to get started</div></div>`;
+      document.getElementById('goals-list').innerHTML = html;
+    }
+
+    function switchGoalTab(tab) {
+      currentGoalTab = tab;
+      document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      renderGoals();
+    }
+
+    function renderGoalCard(goal) {
+      const progress = calculateGoalProgress(goal.id);
+      const childGoals = data.goals.filter(g => g.parentGoalId === goal.id);
+      const tasks = data.tasks.filter(t => t.goalId === goal.id);
+      return `
+        <div class="card goal-card" onclick="openGoalDetail('${goal.id}')">
+          <div class="flex justify-between items-center mb-1">
+            <span class="badge ${goal.status === 'completed' ? 'badge-success' : 'badge-primary'}">${goal.status}</span>
+            ${goal.dueDate ? `<span class="text-sm text-muted">Due: ${goal.dueDate}</span>` : ''}
+          </div>
+          <div class="goal-title">${escapeHtml(goal.title)}</div>
+          ${goal.notes ? `<div class="text-sm text-muted mt-1">${escapeHtml(goal.notes).substring(0, 100)}...</div>` : ''}
+          <div class="goal-progress">
+            <div class="goal-progress-bar" style="width: ${progress}%"></div>
+          </div>
+          <div class="goal-stats">
+            <span>${progress}% complete</span>
+            <span>${childGoals.length} sub-goals • ${tasks.length} tasks</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function calculateGoalProgress(goalId) {
+      const directTasks = data.tasks.filter(t => t.goalId === goalId);
+      const childGoals = data.goals.filter(g => g.parentGoalId === goalId);
+      let totalItems = directTasks.length;
+      let completedItems = directTasks.filter(t => t.status === 'done').length;
+      childGoals.forEach(child => {
+        const childTasks = data.tasks.filter(t => t.goalId === child.id);
+        totalItems += childTasks.length;
+        completedItems += childTasks.filter(t => t.status === 'done').length;
+      });
+      return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    }
+
+    function openGoalDetail(goalId) {
+      const goal = data.goals.find(g => g.id === goalId);
+      const childGoals = data.goals.filter(g => g.parentGoalId === goalId);
+      const tasks = data.tasks.filter(t => t.goalId === goalId);
+      const progress = calculateGoalProgress(goalId);
+      const childGoalsHtml = childGoals.length > 0
+        ? `<h4 class="font-bold mt-2 mb-1">Sub-Goals</h4>` + childGoals.map(g => `
+          <div class="task-item">
+            <span class="badge ${g.status === 'completed' ? 'badge-success' : 'badge-secondary'}">${g.status}</span>
+            <span class="task-title">${escapeHtml(g.title)}</span>
+          </div>`).join('')
+        : '';
+      const tasksHtml = tasks.length > 0
+        ? `<h4 class="font-bold mt-2 mb-1">Tasks</h4>` + tasks.map(t => `
+          <div class="task-item ${t.status === 'done' ? 'done' : ''}">
+            <div class="task-checkbox ${t.status === 'done' ? 'checked' : ''}" onclick="toggleTaskDone('${t.id}'); setTimeout(()=>openGoalDetail('${goalId}'),300);"></div>
+            <span class="task-title">${escapeHtml(t.title)}</span>
+          </div>`).join('')
+        : '';
+      openModal(goal.title, `
+        <div class="mb-2">
+          <div class="flex gap-1 mb-1">
+            <span class="badge ${goal.type === 'big' ? 'badge-primary' : 'badge-secondary'}">${goal.type === 'big' ? 'Big Goal' : 'Short-Term'}</span>
+            <span class="badge ${goal.status === 'completed' ? 'badge-success' : 'badge-accent'}">${goal.status}</span>
+          </div>
+          ${goal.dueDate ? `<div class="text-sm text-muted">Due: ${goal.dueDate}</div>` : ''}
+          ${goal.notes ? `<p class="mt-1">${escapeHtml(goal.notes)}</p>` : ''}
+          <div class="goal-progress mt-2"><div class="goal-progress-bar" style="width: ${progress}%"></div></div>
+          <div class="text-sm text-muted mt-1">${progress}% complete</div>
+        </div>
+        ${childGoalsHtml}
+        ${tasksHtml}
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        <button class="btn btn-ghost" onclick="openEditGoalModal('${goalId}')">Edit</button>
+        <button class="btn btn-danger" onclick="confirmDeleteGoal('${goalId}')">Delete</button>
+      `);
+    }
+
+    async function confirmDeleteGoal(id) {
+      if (confirm('Are you sure you want to delete this goal? Tasks linked to it will remain.')) {
+        await API.del('/api/goals', { id });
+        data.goals = data.goals.filter(g => g.id !== id);
+        closeModal();
+        renderGoals();
+      }
+    }
+
+    // ================================================================
+    //  Jobs
+    // ================================================================
+    function renderJobs() {
+      const statuses = ['interested', 'applied', 'interview', 'offer', 'rejected'];
+      statuses.forEach(status => {
+        const jobs = data.jobs.filter(j => j.status === status);
+        document.getElementById(`count-${status}`).textContent = jobs.length;
+        document.getElementById(`jobs-${status}`).innerHTML = jobs.length > 0
+          ? jobs.map(j => renderJobCard(j)).join('')
+          : '<div class="text-center text-muted text-sm">No work items</div>';
+      });
+    }
+
+    function renderJobCard(job) {
+      return `
+        <div class="job-card" onclick="openJobDetail('${job.id}')">
+          <div class="job-company">${escapeHtml(job.company)}</div>
+          <div class="job-role">${escapeHtml(job.role)}</div>
+          ${job.nextActionDate ? `<div class="text-sm text-muted mt-1">Next: ${job.nextActionDate}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function openJobDetail(jobId) {
+      const job = data.jobs.find(j => j.id === jobId);
+      const tasks = data.tasks.filter(t => t.jobId === jobId);
+      const tasksHtml = tasks.length > 0
+        ? `<h4 class="font-bold mt-2 mb-1">Linked Tasks</h4>` + tasks.map(t => `
+          <div class="task-item ${t.status === 'done' ? 'done' : ''}">
+            <div class="task-checkbox ${t.status === 'done' ? 'checked' : ''}" onclick="toggleTaskDone('${t.id}'); setTimeout(()=>openJobDetail('${jobId}'),300);"></div>
+            <span class="task-title">${escapeHtml(t.title)}</span>
+          </div>`).join('')
+        : '';
+      const statusLabels = { interested: 'Planned', applied: 'Active', interview: 'In Review', offer: 'Completed', rejected: 'On Hold' };
+      const statusOptions = ['interested', 'applied', 'interview', 'offer', 'rejected']
+        .map(s => `<button class="btn ${job.status === s ? 'btn-primary' : 'btn-ghost'} btn-sm" onclick="changeJobStatus('${jobId}', '${s}')">${statusLabels[s]}</button>`)
+        .join('');
+      openModal(`${job.company} - ${job.role}`, `
+        <div class="mb-2">
+          <div class="flex gap-1 flex-wrap mb-2">${statusOptions}</div>
+          ${job.link ? `<div class="mb-1"><a href="${escapeHtml(job.link)}" target="_blank" class="text-sm" style="color: var(--secondary)">🔗 ${escapeHtml(job.link)}</a></div>` : ''}
+          ${job.nextActionDate ? `<div class="text-sm text-muted">Next Action: ${job.nextActionDate}</div>` : ''}
+          ${job.notes ? `<p class="mt-1">${escapeHtml(job.notes)}</p>` : ''}
+        </div>
+        ${tasksHtml}
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        <button class="btn btn-ghost" onclick="openEditJobModal('${jobId}')">Edit</button>
+        <button class="btn btn-danger" onclick="confirmDeleteJob('${jobId}')">Delete</button>
+      `);
+    }
+
+    async function changeJobStatus(jobId, status) {
+      const job = data.jobs.find(j => j.id === jobId);
+      if (job) {
+        job.status = status;
+        await API.put('/api/jobs', jobToApi(job));
+        openJobDetail(jobId);
+        renderJobs();
+      }
+    }
+
+    async function confirmDeleteJob(id) {
+      if (confirm('Are you sure you want to delete this work item?')) {
+        await API.del('/api/jobs', { id });
+        data.jobs = data.jobs.filter(j => j.id !== id);
+        closeModal();
+        renderJobs();
+      }
+    }
+
+    // ================================================================
+    //  Reminders
+    // ================================================================
+    function renderReminders() {
+      const now = new Date();
+      const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const tasksWithReminders = data.tasks.filter(t => t.reminderDateTime);
+      const upcoming = tasksWithReminders.filter(t => {
+        const rt = new Date(t.reminderDateTime);
+        return rt >= now && rt <= in24Hours;
+      });
+      document.getElementById('reminders-upcoming').innerHTML = upcoming.length > 0
+        ? upcoming.map(t => renderReminderItem(t)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">🔔</div><div>No reminders in the next 24 hours</div></div>';
+      document.getElementById('reminders-all').innerHTML = tasksWithReminders.length > 0
+        ? tasksWithReminders.map(t => renderReminderItem(t, true)).join('')
+        : '<div class="empty-state"><div class="empty-state-icon">📋</div><div>No reminders set</div></div>';
+    }
+
+    function renderReminderItem(task, showToggle = false) {
+      const reminderTime = new Date(task.reminderDateTime);
+      return `
+        <div class="task-item">
+          <div class="task-content">
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div class="task-meta"><span>🔔 ${reminderTime.toLocaleString()}</span></div>
+          </div>
+          ${showToggle ? `<button class="btn btn-ghost btn-sm" onclick="removeReminder('${task.id}')">Remove</button>` : ''}
+        </div>
+      `;
+    }
+
+    async function removeReminder(taskId) {
+      const task = data.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.reminderDateTime = null;
+        await API.put('/api/tasks', taskToApi(task));
+        renderReminders();
+      }
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') alert('Notifications enabled! You will receive reminders.');
+        });
+      } else {
+        alert('Your browser does not support notifications.');
+      }
+    }
+
+    async function checkReminders() {
+      const now = new Date();
+      for (const task of data.tasks) {
+        if (task.reminderDateTime && task.status !== 'done') {
+          const reminderTime = new Date(task.reminderDateTime);
+          const diff = Math.abs(now - reminderTime);
+          if (diff < 60000) {
+            showNotification(task);
+            task.reminderDateTime = null;
+            await API.put('/api/tasks', taskToApi(task));
+          }
+        }
+      }
+    }
+
+    function showNotification(task) {
+      const sound = document.getElementById('notification-sound');
+      sound.play().catch(() => {});
+      const banner = document.createElement('div');
+      banner.className = 'notification-banner';
+      banner.innerHTML = `
+        <div class="font-bold">⏰ Reminder</div>
+        <div>${escapeHtml(task.title)}</div>
+        <button class="btn btn-ghost btn-sm mt-1" onclick="this.parentElement.remove()">Dismiss</button>
+      `;
+      document.body.appendChild(banner);
+      setTimeout(() => { banner.classList.add('hide'); setTimeout(() => banner.remove(), 300); }, 10000);
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Task Reminder', { body: task.title, icon: '🔔' });
+      }
+    }
+
+    // ================================================================
+    //  Modals
+    // ================================================================
+    function openModal(title, body, footer) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = body;
+      document.getElementById('modal-footer').innerHTML = footer;
+      document.getElementById('modal-overlay').classList.add('active');
+    }
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+    function closeModalOnOverlay(e) { if (e.target.id === 'modal-overlay') closeModal(); }
+
+    // -- Task Modal --
+    function openTaskModal() { openQuickAddTask(); }
+
+    function openQuickAddTask() {
+      const goalOptions = data.goals.map(g => `<option value="${g.id}">${escapeHtml(g.title)}</option>`).join('');
+      const jobOptions = data.jobs.map(j => `<option value="${j.id}">${escapeHtml(j.company)} - ${escapeHtml(j.role)}</option>`).join('');
+      openModal('Add Task', `
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" class="input" id="task-title" placeholder="Task title"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="input" id="task-due" value="${getToday()}"></div>
+          <div class="form-group"><label class="form-label">Priority</label><select class="select" id="task-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="task-status"><option value="todo">To Do</option><option value="doing">Doing</option><option value="done">Done</option></select></div>
+          <div class="form-group"><label class="form-label">Reminder</label><input type="datetime-local" class="input" id="task-reminder"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Goal</label><select class="select" id="task-goal"><option value="">None</option>${goalOptions}</select></div>
+          <div class="form-group"><label class="form-label">Work Item</label><select class="select" id="task-job"><option value="">None</option>${jobOptions}</select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="task-notes" placeholder="Additional notes..."></textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTask()">Add Task</button>
+      `);
+    }
+
+    async function saveTask(editId = null) {
+      const title = document.getElementById('task-title').value.trim();
+      if (!title) { alert('Please enter a task title'); return; }
+      const payload = {
+        title,
+        status: document.getElementById('task-status').value,
+        due_date: document.getElementById('task-due').value || getToday(),
+        reminder_date_time: document.getElementById('task-reminder').value || null,
+        priority: document.getElementById('task-priority').value,
+        goal_id: document.getElementById('task-goal').value || null,
+        job_id: document.getElementById('task-job').value || null,
+        notes: document.getElementById('task-notes').value
+      };
+      if (editId) {
+        payload.id = editId;
+        const saved = await API.put('/api/tasks', payload);
+        const idx = data.tasks.findIndex(t => t.id === editId);
+        if (idx !== -1) data.tasks[idx] = normaliseTask(saved);
+      } else {
+        const saved = await API.post('/api/tasks', payload);
+        data.tasks.push(normaliseTask(saved));
+      }
+      closeModal();
+      renderCurrentPage();
+    }
+
+    function openEditTaskModal(id) {
+      const task = data.tasks.find(t => t.id === id);
+      if (!task) return;
+      const goalOptions = data.goals.map(g => `<option value="${g.id}" ${task.goalId === g.id ? 'selected' : ''}>${escapeHtml(g.title)}</option>`).join('');
+      const jobOptions = data.jobs.map(j => `<option value="${j.id}" ${task.jobId === j.id ? 'selected' : ''}>${escapeHtml(j.company)} - ${escapeHtml(j.role)}</option>`).join('');
+      openModal('Edit Task', `
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" class="input" id="task-title" value="${escapeHtml(task.title)}"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="input" id="task-due" value="${task.dueDate}"></div>
+          <div class="form-group"><label class="form-label">Priority</label><select class="select" id="task-priority"><option value="low" ${task.priority==='low'?'selected':''}>Low</option><option value="medium" ${task.priority==='medium'?'selected':''}>Medium</option><option value="high" ${task.priority==='high'?'selected':''}>High</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="task-status"><option value="todo" ${task.status==='todo'?'selected':''}>To Do</option><option value="doing" ${task.status==='doing'?'selected':''}>Doing</option><option value="done" ${task.status==='done'?'selected':''}>Done</option></select></div>
+          <div class="form-group"><label class="form-label">Reminder</label><input type="datetime-local" class="input" id="task-reminder" value="${task.reminderDateTime || ''}"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Goal</label><select class="select" id="task-goal"><option value="">None</option>${goalOptions}</select></div>
+          <div class="form-group"><label class="form-label">Work Item</label><select class="select" id="task-job"><option value="">None</option>${jobOptions}</select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="task-notes">${escapeHtml(task.notes || '')}</textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTask('${id}')">Save Changes</button>
+      `);
+    }
+
+    // -- Goal Modal --
+    function openGoalModal() {
+      const bigGoalOptions = data.goals.filter(g => g.type === 'big').map(g => `<option value="${g.id}">${escapeHtml(g.title)}</option>`).join('');
+      openModal('Add Goal', `
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" class="input" id="goal-title" placeholder="Goal title"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Type</label><select class="select" id="goal-type" onchange="toggleParentGoal()"><option value="big">Big Goal</option><option value="short">Short-Term Goal</option></select></div>
+          <div class="form-group" id="parent-goal-group" style="display: none;"><label class="form-label">Parent Goal</label><select class="select" id="goal-parent"><option value="">None</option>${bigGoalOptions}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="goal-status"><option value="active">Active</option><option value="paused">Paused</option><option value="completed">Completed</option></select></div>
+          <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="input" id="goal-due"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="goal-notes" placeholder="Describe your goal..."></textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGoal()">Add Goal</button>
+      `);
+    }
+
+    function toggleParentGoal() {
+      const type = document.getElementById('goal-type').value;
+      document.getElementById('parent-goal-group').style.display = type === 'short' ? 'block' : 'none';
+    }
+
+    async function saveGoal(editId = null) {
+      const title = document.getElementById('goal-title').value.trim();
+      if (!title) { alert('Please enter a goal title'); return; }
+      const payload = {
+        title,
+        type: document.getElementById('goal-type').value,
+        parent_goal_id: document.getElementById('goal-parent')?.value || null,
+        status: document.getElementById('goal-status').value,
+        due_date: document.getElementById('goal-due').value || null,
+        notes: document.getElementById('goal-notes').value
+      };
+      if (editId) {
+        payload.id = editId;
+        const saved = await API.put('/api/goals', payload);
+        const idx = data.goals.findIndex(g => g.id === editId);
+        if (idx !== -1) data.goals[idx] = normaliseGoal(saved);
+      } else {
+        const saved = await API.post('/api/goals', payload);
+        data.goals.push(normaliseGoal(saved));
+      }
+      closeModal();
+      renderGoals();
+    }
+
+    function openEditGoalModal(id) {
+      const goal = data.goals.find(g => g.id === id);
+      if (!goal) return;
+      const bigGoalOptions = data.goals.filter(g => g.type === 'big' && g.id !== id).map(g => `<option value="${g.id}" ${goal.parentGoalId === g.id ? 'selected' : ''}>${escapeHtml(g.title)}</option>`).join('');
+      openModal('Edit Goal', `
+        <div class="form-group"><label class="form-label">Title *</label><input type="text" class="input" id="goal-title" value="${escapeHtml(goal.title)}"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Type</label><select class="select" id="goal-type" onchange="toggleParentGoal()"><option value="big" ${goal.type==='big'?'selected':''}>Big Goal</option><option value="short" ${goal.type==='short'?'selected':''}>Short-Term Goal</option></select></div>
+          <div class="form-group" id="parent-goal-group" style="display: ${goal.type==='short'?'block':'none'};"><label class="form-label">Parent Goal</label><select class="select" id="goal-parent"><option value="">None</option>${bigGoalOptions}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="goal-status"><option value="active" ${goal.status==='active'?'selected':''}>Active</option><option value="paused" ${goal.status==='paused'?'selected':''}>Paused</option><option value="completed" ${goal.status==='completed'?'selected':''}>Completed</option></select></div>
+          <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="input" id="goal-due" value="${goal.dueDate || ''}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="goal-notes">${escapeHtml(goal.notes || '')}</textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGoal('${id}')">Save Changes</button>
+      `);
+    }
+
+    // -- Job Modal --
+    function openJobModal() {
+      openModal('Add Work Item', `
+        <div class="form-group"><label class="form-label">Project / Role Name *</label><input type="text" class="input" id="job-company" placeholder="e.g. Main Job, Freelance Project, Side Gig"></div>
+        <div class="form-group"><label class="form-label">Type / Category *</label><input type="text" class="input" id="job-role" placeholder="e.g. Full-time, Contract, Personal Project"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="job-status"><option value="interested">Planned</option><option value="applied">Active</option><option value="interview">In Review</option><option value="offer">Completed</option><option value="rejected">On Hold</option></select></div>
+          <div class="form-group"><label class="form-label">Next Action Date</label><input type="date" class="input" id="job-next-action"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Link</label><input type="url" class="input" id="job-link" placeholder="Reference URL or link"></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="job-notes" placeholder="Notes about this work item..."></textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveJob()">Add Work Item</button>
+      `);
+    }
+
+    async function saveJob(editId = null) {
+      const company = document.getElementById('job-company').value.trim();
+      const role = document.getElementById('job-role').value.trim();
+      if (!company || !role) { alert('Please enter a project name and type'); return; }
+      const payload = {
+        company,
+        role,
+        status: document.getElementById('job-status').value,
+        next_action_date: document.getElementById('job-next-action').value || null,
+        link: document.getElementById('job-link').value || null,
+        notes: document.getElementById('job-notes').value
+      };
+      if (editId) {
+        payload.id = editId;
+        const saved = await API.put('/api/jobs', payload);
+        const idx = data.jobs.findIndex(j => j.id === editId);
+        if (idx !== -1) data.jobs[idx] = normaliseJob(saved);
+      } else {
+        const saved = await API.post('/api/jobs', payload);
+        data.jobs.push(normaliseJob(saved));
+      }
+      closeModal();
+      renderJobs();
+    }
+
+    function openEditJobModal(id) {
+      const job = data.jobs.find(j => j.id === id);
+      if (!job) return;
+      openModal('Edit Work Item', `
+        <div class="form-group"><label class="form-label">Project / Role Name *</label><input type="text" class="input" id="job-company" value="${escapeHtml(job.company)}"></div>
+        <div class="form-group"><label class="form-label">Type / Category *</label><input type="text" class="input" id="job-role" value="${escapeHtml(job.role)}"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Status</label><select class="select" id="job-status"><option value="interested" ${job.status==='interested'?'selected':''}>Planned</option><option value="applied" ${job.status==='applied'?'selected':''}>Active</option><option value="interview" ${job.status==='interview'?'selected':''}>In Review</option><option value="offer" ${job.status==='offer'?'selected':''}>Completed</option><option value="rejected" ${job.status==='rejected'?'selected':''}>On Hold</option></select></div>
+          <div class="form-group"><label class="form-label">Next Action Date</label><input type="date" class="input" id="job-next-action" value="${job.nextActionDate || ''}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Link</label><input type="url" class="input" id="job-link" value="${escapeHtml(job.link || '')}"></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="textarea" id="job-notes">${escapeHtml(job.notes || '')}</textarea></div>
+      `, `
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveJob('${id}')">Save Changes</button>
+      `);
+    }
+
+    // ================================================================
+    //  Utilities
+    // ================================================================
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+
+    function getTomorrow() {
+      const t = new Date();
+      t.setDate(t.getDate() + 1);
+      return t.toISOString().split('T')[0];
+    }
+
+    async function confirmReset() {
+      if (confirm('Are you sure you want to reset ALL data? This cannot be undone.')) {
+        await API.post('/api/reset', {});
+        data = { tasks: [], goals: [], jobs: [] };
+        renderCurrentPage();
+        alert('All data has been cleared.');
+      }
+    }
+
+    function renderCurrentPage() {
+      const activePage = document.querySelector('.page.active').id.replace('page-', '');
+      showPage(activePage);
+    }
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // ================================================================
+    //  Initialize
+    // ================================================================
+    async function init() {
+      await loadAllData();
+      document.getElementById('loading-overlay').classList.add('hidden');
+      renderDashboard();
+      reminderInterval = setInterval(checkReminders, 60000);
+      checkReminders();
+    }
+
+    init();
+  </script>
+</body>
+</html>
